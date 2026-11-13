@@ -1,0 +1,19 @@
+const http=require('http'),fs=require('fs'),path=require('path'),crypto=require('crypto'),os=require('os');
+const root=__dirname,rooms=new Map();
+const json=(res,obj,status=200)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Access-Control-Allow-Origin':'*'});res.end(JSON.stringify(obj))};
+function body(req){return new Promise((ok,bad)=>{let s='';req.on('data',d=>s+=d);req.on('end',()=>{try{ok(JSON.parse(s||'{}'))}catch(e){bad(e)}})})}
+const server=http.createServer(async(req,res)=>{let u=new URL(req.url,'http://localhost');if(req.method==='OPTIONS'){res.writeHead(204,{'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'Content-Type','Access-Control-Allow-Methods':'GET,POST'});return res.end()}
+try{if(u.pathname==='/api/new'&&req.method==='POST'){let code=String(Math.floor(100000+Math.random()*900000)),room={code,players:[],status:'lobby',question:null,questionNo:0,total:20,answers:{},board:[],updated:Date.now()};rooms.set(code,room);return json(res,room)}
+if(u.pathname==='/api/network'){let ips=[];for(const list of Object.values(os.networkInterfaces()))for(const n of list||[])if(n.family==='IPv4'&&!n.internal)ips.push(n.address);return json(res,{ips,port})}
+if(u.pathname==='/api/state'){let r=rooms.get(u.searchParams.get('code'));return r?json(res,r):json(res,{error:'Oda bulunamadı'},404)}
+if(req.method==='POST'){let d=await body(req),r=rooms.get(String(d.code));if(!r)return json(res,{error:'Oda bulunamadı'},404);
+if(u.pathname==='/api/join'){if(r.status!=='lobby')return json(res,{error:'Oyun başlamış'},409);if(r.players.length>=25)return json(res,{error:'Oda dolu'},409);let name=String(d.name||'').trim().slice(0,18),id=crypto.randomUUID();if(!name)return json(res,{error:'İsim gerekli'},400);if(r.players.some(p=>p.name.toLocaleLowerCase('tr')===name.toLocaleLowerCase('tr')))name+=' '+(r.players.length+1);let player={id,name,avatar:d.avatar||'🚀',score:0,streak:0};r.players.push(player);return json(res,{player,room:r})}
+if(u.pathname==='/api/start'){if(r.players.length<1)return json(res,{error:'En az bir oyuncu katılmalı'},400);r.questions=d.questions;r.total=Number(d.total)||20;r.timeLimit=Number(d.timeLimit)||20;r.mode=String(d.mode||'classic');r.status='question';r.questionNo=1;r.question=r.questions[0];r.answers={};r.updated=Date.now();return json(res,r)}
+if(u.pathname==='/api/answer'){if(r.status!=='question')return json(res,{error:'Soru aktif değil'},409);let p=r.players.find(x=>x.id===d.playerId);if(!p)return json(res,{error:'Oyuncu bulunamadı'},404);if(r.answers[p.id])return json(res,{ok:true,already:true});let correct=Number(d.choice)===Number(r.question.correct),elapsed=Math.max(0,Number(d.elapsed)||0),timeLeft=Math.max(0,20-elapsed);r.answers[p.id]={choice:d.choice,correct};if(correct){p.streak++;p.score+=500+Math.round(timeLeft*25)+Math.min(p.streak*25,125)}else p.streak=0;return json(res,{ok:true,correct,score:p.score})}
+if(u.pathname==='/api/reveal'){r.status='board';r.board=[...r.players].sort((a,b)=>b.score-a.score);return json(res,r)}
+if(u.pathname==='/api/next'){if(r.questionNo>=r.total){r.status='finished';r.board=[...r.players].sort((a,b)=>b.score-a.score)}else{r.questionNo++;r.question=r.questions[r.questionNo-1];r.answers={};r.status='question'}return json(res,r)}
+if(u.pathname==='/api/close'){rooms.delete(r.code);return json(res,{ok:true})}}
+if(u.pathname==='/'){res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});return fs.createReadStream(path.join(root,'index.html')).pipe(res)}
+res.writeHead(404);res.end('Not found')
+}catch(e){json(res,{error:'Sunucu hatası'},500)}});
+const port=Number(process.env.PORT)||3000;server.listen(port,'0.0.0.0',()=>console.log(`Milli Teknoloji Arenası hazır: http://localhost:${port}`));
