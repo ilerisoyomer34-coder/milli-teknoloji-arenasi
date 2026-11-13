@@ -1,5 +1,5 @@
-const CACHE = 'teknoarena-shell-v4';
-const SHELL = ['/', '/manifest.webmanifest', '/icon.svg', '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png', '/avatars/hilal.jpg', '/avatars/vegar.jpg', '/avatars/omer.jpg', '/avatars/osmanli.jpg'];
+const CACHE = 'teknoarena-shell-v5';
+const SHELL = ['/', '/manifest.webmanifest', '/icon.svg', '/arena-icon-192.png', '/arena-icon-512.png', '/arena-apple-touch-icon.png', '/avatars/hilal.jpg', '/avatars/vegar.jpg', '/avatars/omer.jpg', '/avatars/osmanli.jpg'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)));
   self.skipWaiting();
