@@ -1,4 +1,4 @@
-const CACHE = 'teknoarena-shell-v8';
+const CACHE = 'teknoarena-shell-v9';
 const SHELL = ['/', '/manifest.webmanifest?v=5c7d36b', '/icon.svg', '/arena-icon-192.png', '/arena-icon-512.png', '/arena-apple-touch-icon.png', '/avatars/hilal.jpg', '/avatars/vegar.jpg', '/avatars/omer.jpg', '/avatars/osmanli.jpg', '/effects-sprite.png?v=c8eabe3'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)));
