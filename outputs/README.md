@@ -32,3 +32,7 @@ Sorular ortaokul öğrencileri için robotik, yapay zekâ, yazılım, uzay, ener
 - [TUSAŞ — ürün galerisi](https://www.tusas.com/medya-merkezi/fotograf-galerisi)
 
 Havuzdaki ürün adları ve sınıflandırmalar öğretmen tarafından etkinlik öncesinde gözden geçirilebilir; bazı ürün adları ve programlar zaman içinde değişebilir.
+
+## İnternette yayınlama
+
+Proje kök dizinindeki `render.yaml` ve `package.json` Render Web Service için hazırlandı. GitHub deposu Render'a bağlandıktan sonra Render'da **New → Blueprint** ile depoyu seçip servisi oluşturun; dağıtım tamamlanınca size bir `onrender.com` adresi verir. Ücretsiz servis 15 dakika trafik olmazsa uykuya geçer; ilk açılış yaklaşık bir dakika sürebilir. Aktif oyun sırasında oyuncular düzenli istek gönderdiğinden servis uyanık kalır. Oda bilgileri sunucunun belleğinde tutulduğu için yeniden başlatma açık oyunu kapatır.
