@@ -13,7 +13,8 @@ if(u.pathname==='/api/answer'){if(r.status!=='question')return json(res,{error:'
 if(u.pathname==='/api/reveal'){r.status='board';r.board=[...r.players].sort((a,b)=>b.score-a.score);return json(res,r)}
 if(u.pathname==='/api/next'){if(r.questionNo>=r.total){r.status='finished';r.board=[...r.players].sort((a,b)=>b.score-a.score)}else{r.questionNo++;r.question=r.questions[r.questionNo-1];r.answers={};r.status='question'}return json(res,r)}
 if(u.pathname==='/api/close'){rooms.delete(r.code);return json(res,{ok:true})}}
-if(u.pathname==='/'){res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});return fs.createReadStream(path.join(root,'index.html')).pipe(res)}
+const staticFiles={'/':'index.html','/manifest.webmanifest':'manifest.webmanifest','/sw.js':'sw.js','/icon.svg':'icon.svg','/icon-192.png':'icon-192.png','/icon-512.png':'icon-512.png','/apple-touch-icon.png':'apple-touch-icon.png'};
+if(req.method==='GET'&&staticFiles[u.pathname]){const file=staticFiles[u.pathname],types={'index.html':'text/html; charset=utf-8','manifest.webmanifest':'application/manifest+json; charset=utf-8','sw.js':'text/javascript; charset=utf-8','icon.svg':'image/svg+xml','icon-192.png':'image/png','icon-512.png':'image/png','apple-touch-icon.png':'image/png'};res.writeHead(200,{'Content-Type':types[file],'Cache-Control':file==='index.html'?'no-cache':'public, max-age=3600'});return fs.createReadStream(path.join(root,file)).pipe(res)}
 res.writeHead(404);res.end('Not found')
 }catch(e){json(res,{error:'Sunucu hatası'},500)}});
 const port=Number(process.env.PORT)||3000;server.listen(port,'0.0.0.0',()=>console.log(`Milli Teknoloji Arenası hazır: http://localhost:${port}`));

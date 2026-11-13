@@ -1,0 +1,17 @@
+{
+  "id": "/",
+  "name": "Milli Teknoloji Arenası",
+  "short_name": "TeknoArena",
+  "description": "Milli teknoloji temalı canlı bilgi yarışması",
+  "lang": "tr-TR",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#24105c",
+  "theme_color": "#24105c",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
